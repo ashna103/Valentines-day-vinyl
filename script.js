@@ -1,36 +1,43 @@
 document.addEventListener("DOMContentLoaded", () => {
   const vinyl = document.getElementById("vinyl");
   const playButton = document.getElementById("play-button");
-  const audio = document.getElementById("sumika-Fiction");
+  const audio = document.getElementById("love-song");
 
-  // Ensure UI matches actual audio state
-  function setPlayingUI(isPlaying) {
-    vinyl.classList.toggle("spinning", isPlaying);
-    playButton.textContent = isPlaying ? "Pause" : "Play";
-    playButton.setAttribute("aria-pressed", String(isPlaying));
+  // HARD FAIL if elements aren't found
+  if (!vinyl || !playButton || !audio) {
+    console.error("Missing elements:", { vinyl, playButton, audio });
+    alert("Something didn't load (vinyl/playButton/audio missing). Check IDs + filenames.");
+    return;
   }
 
-  // Toggle play/pause on button click
+  function setUI(playing) {
+    vinyl.classList.toggle("spinning", playing);
+    playButton.textContent = playing ? "Pause" : "Play";
+  }
+
   playButton.addEventListener("click", async () => {
     try {
       if (audio.paused) {
-        await audio.play(); // may fail if browser blocks autoplay; click usually allows it
-        setPlayingUI(true);
+        // force starting from beginning if you want:
+        // audio.currentTime = 0;
+
+        await audio.play();
+        setUI(true);
       } else {
         audio.pause();
-        setPlayingUI(false);
+        setUI(false);
       }
-    } catch (err) {
-      console.error("Audio play failed:", err);
-      // If the mp3 isn't found or blocked, you’ll see it here.
+    } catch (e) {
+      console.error("Audio play error:", e);
+      alert(
+        "Audio couldn't play. Likely the MP3 path/name is wrong or the browser blocked it. Check Console + Network."
+      );
     }
   });
 
-  // Keep UI in sync if audio ends naturally
-  audio.addEventListener("ended", () => setPlayingUI(false));
-  audio.addEventListener("pause", () => setPlayingUI(false));
-  audio.addEventListener("play", () => setPlayingUI(true));
+  audio.addEventListener("ended", () => setUI(false));
+  audio.addEventListener("pause", () => setUI(false));
+  audio.addEventListener("play", () => setUI(true));
 
-  // Initial state
-  setPlayingUI(false);
+  setUI(false);
 });
