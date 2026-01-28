@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const vinyl = document.getElementById("vinyl");
   const playButton = document.getElementById("play-button");
-  const audio = document.getElementById("love-song");
+  const audio = document.getElementById("sumika-Fiction");
 
   // Ensure UI matches actual audio state
   function setPlayingUI(isPlaying) {
